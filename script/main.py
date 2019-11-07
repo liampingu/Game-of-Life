@@ -41,7 +41,7 @@ def resize_console(rows, cols):
         print("Unable to resize terminal. Your operating system is not supported.\n\r")
 
 
-def create_initial_grid(rows, cols):
+def create_initial_grid(rows, cols, density):
     """
     Creates a random list of lists that contains 1s and 0s to represent the cells in Conway's Game of Life.
 
@@ -55,7 +55,7 @@ def create_initial_grid(rows, cols):
         grid_rows = []
         for col in range(cols):
             # Generate a random number and based on that decide whether to add a live or dead cell to the grid
-            if random.randint(0, 7) == 0:
+            if random.randint(0, 99) < density:
                 grid_rows += [1]
             else:
                 grid_rows += [0]
@@ -161,11 +161,11 @@ def grid_changing(rows, cols, grid, next_grid):
     return False
 
 
-def get_integer_value(prompt, low, high):
+def get_integer_value(string, low, high):
     """
     Asks the user for integer input and between given bounds low and high.
 
-    :param prompt: String - The string to prompt the user for input with
+    :param string: String - The string representing the integer
     :param low: Int - The low bound that the user must stay within
     :param high: Int - The high bound that the user must stay within
     :return: The valid input value that the user entered
@@ -173,7 +173,7 @@ def get_integer_value(prompt, low, high):
 
     while True:
         try:
-            value = int(input(prompt))
+            value = int(string)
         except ValueError:
             print("Input was not a valid integer value.")
             continue
@@ -186,36 +186,44 @@ def get_integer_value(prompt, low, high):
 
 def run_game():
     """
-    Asks the user for input to setup the Game of Life to run for a given number of generations.
+    Parses the command line arguments and runs the game
 
     """
+    
+    if len(sys.argv) != 4:
+        print('usage: {} <rows> <columns> <density>'.format(sys.argv[0]))
+        print('     rows: between 10 and 60 (try 50)')
+        print('     columns: between 10 and 118 (try 50)')
+        print('     density: between 0 to 100 (try 15)')
+        exit()
 
     clear_console()
 
     # Get the number of rows and columns for the Game of Life grid
-    rows = get_integer_value("Enter the number of rows (10-60): ", 10, 60)
-    cols = get_integer_value("Enter the number of cols (10-118): ", 10, 118)
-
-    # Get the number of generations that the Game of Life should run for
-    generations = get_integer_value("Enter the number of generations (1-100000): ", 1, 100000)
+    rows = get_integer_value(sys.argv[1], 10, 60)
+    cols = get_integer_value(sys.argv[2], 10, 118)
+    density = get_integer_value(sys.argv[3], 0, 100)
+    
     resize_console(rows, cols)
 
     # Create the initial random Game of Life grids
-    current_generation = create_initial_grid(rows, cols)
-    next_generation = create_initial_grid(rows, cols)
+    current_generation = create_initial_grid(rows, cols, density)
+    next_generation = create_initial_grid(rows, cols, 0) # start empty
 
     # Run Game of Life sequence
-    gen = 1
-    for gen in range(1, generations + 1):
+    gen = 0
+    while True:
         if not grid_changing(rows, cols, current_generation, next_generation):
             break
         print_grid(rows, cols, current_generation, gen)
         create_next_grid(rows, cols, current_generation, next_generation)
-        time.sleep(1 / 5.0)
+        time.sleep(1 / 10.0)
         current_generation, next_generation = next_generation, current_generation
+        gen += 1
 
     print_grid(rows, cols, current_generation, gen)
-    input("Press <Enter> to exit.")
+    
+    print("Everything's dead! (or not moving)")
 
 
 # Start the Game of Life
