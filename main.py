@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import time
 import os
 import random
 import sys
@@ -217,7 +216,7 @@ def run_game():
             break
         print_grid(rows, cols, current_generation, gen)
         create_next_grid(rows, cols, current_generation, next_generation)
-        time.sleep(1 / 10.0)
+        input()
         current_generation, next_generation = next_generation, current_generation
         gen += 1
 

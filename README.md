@@ -17,4 +17,4 @@ Using the following ruleset the 2D grid of cells will evolve from generation to 
 
 ## How to Run
 
-Get started with `python3 scripts/main.py 50 50 15` to run the Game of Life with 50 rows, 50 columns and starting density of 15%.
+Get started with `python3 main.py 50 50 15` to run the Game of Life with 50 rows, 50 columns and starting density of 15%.
